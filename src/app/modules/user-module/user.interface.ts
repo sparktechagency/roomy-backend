@@ -7,6 +7,10 @@ interface IUser extends Document {
   email: string;
   phone: string;
   password: string;
+   profile: {
+    id: Types.ObjectId;
+    role: string;
+  };
   status: string;
   isEmailVerified: boolean;
   verification?: {
@@ -14,16 +18,6 @@ interface IUser extends Document {
     expireDate: Date;
   };
   isDeleted: boolean;
-  activeSubscription: {
-    id: Types.ObjectId | null;
-    title: string;
-  };
-   stripeCustomerId: {
-      type: String,
-      default: null,
-    },
-  role: String,
-  profile: Types.ObjectId | null
   createdAt: Date;
   updatedAt: Date;
 

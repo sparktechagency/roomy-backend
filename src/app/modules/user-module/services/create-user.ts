@@ -1,20 +1,24 @@
-import { ClientSession } from 'mongoose';
+import { ClientSession, Types } from 'mongoose';
 import config from '../../../../config';
+import { ENUM_USER_ROLE } from '../../../../enums/user-role';
 import withTransaction from '../../../../helpers/withTransaction';
 import IdGenerator from '../../../../utilities/idGenerator';
 import sendMail from '../../../../utilities/sendEmail';
 import CustomError from '../../../errors';
-import Profile from '../../profile-module/profile.model';
+import guestServices from '../../guest-profile-module/guest.services';
+import hostServices from '../../host-profile-module/host-services';
+import { IBaseProfile } from '../../profile-module/profile.interface';
 import IUser from '../user.interface';
 import User from '../user.model';
-import { IProfile } from './../../profile-module/profile.interface';
 
-export const createUser = async (data: IUser & IProfile) => {
+export const createUser = async (data: IUser & IBaseProfile, role: string) => {
   const result = await withTransaction(async (session: ClientSession) => {
     try {
       const verificationCode = IdGenerator.generateNumberId();
       const expireDate = new Date();
       expireDate.setMinutes(expireDate.getMinutes() + 30);
+     
+      console.log(data.dateOfBirth)
 
       const userData = {
         email: data.email,
@@ -26,7 +30,8 @@ export const createUser = async (data: IUser & IProfile) => {
         },
       };
 
-      const newUser: any = await User.create([userData], { session }); 
+      const newUser: any = await User.create([userData], { session });
+      console.log(newUser);
       if (!newUser) {
         throw new CustomError.BadRequestError('Failed to create user');
       }
@@ -39,36 +44,46 @@ export const createUser = async (data: IUser & IProfile) => {
       };
       sendMail(mailOptions);
 
-      const profileData = {
+      let profilePayload: any = {
         user: newUser[0]._id,
-        name: data.name,
-        bio: data.bio,
+        firstName: data.firstName,
+        lastName: data.lastName,
         gender: data.gender,
-        dofBirth: data.dofBirth,
-        location: {
-          lat: data.location.lat,
-          lon: data.location.lon,
-        },
+        dateOfBirth: data.dateOfBirth,
       };
 
-      const newProfile = await Profile.create([profileData], { session });
-      if (!newProfile) {
-        throw new CustomError.BadRequestError('Failed to create profile');
+      switch (role) {
+        case ENUM_USER_ROLE.GUEST:
+          const guestProfile = await guestServices.createGuestProfile(profilePayload, session);
+          if (guestProfile) {
+            newUser[0].profile.id = guestProfile._id as unknown as Types.ObjectId;
+            newUser[0].profile.role = role
+          }
+          await newUser[0].save({ session });
+          break;
+
+        case ENUM_USER_ROLE.HOST:
+          const hostProfile = await hostServices.createHostProfile(profilePayload, session);
+          if (hostProfile) {
+            newUser[0].profile = hostProfile._id as unknown as Types.ObjectId;
+            newUser[0].profile.role = role
+          }
+          await newUser[0].save({ session });
+          break;
+
+        default:
+          throw new CustomError.BadRequestError('Invalid role provided.');
       }
-      newUser[0].profile = newProfile[0]._id;
-      await newUser[0].save({ session });
+      
+      const { password, verification, ...userInfo } = newUser[0].toObject();
 
       return {
-        email: userData.email,
-        phone: userData.phone,
-        ...profileData,
+        ...userInfo
       };
     } catch (err) {
       throw err;
     }
   });
 
-  return result; 
+  return result;
 };
-
-

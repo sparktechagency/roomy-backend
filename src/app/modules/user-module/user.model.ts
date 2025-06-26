@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import mongoose, { Types } from 'mongoose';
 import validator from 'validator';
-import IUser from './user.interface';
 import { ENUM_USER_STATUS } from '../../../enums/user-role';
+import IUser from './user.interface';
 
 export const userSchema = new mongoose.Schema<IUser>(
   {
@@ -21,17 +21,38 @@ export const userSchema = new mongoose.Schema<IUser>(
       type: String,
       unique: true,
       required: true,
+      validate: {
+        validator: function (v) {
+          return /^\+61[ ]?4\d{2}[ ]?\d{3}[ ]?\d{3}$/.test(v) || /^\+614\d{8}$/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid Australian mobile phone number!`,
+      },
     },
+
     password: {
       type: String,
       trim: true,
       minlength: [8, 'Password must be at least 8 characters'],
       required: [true, 'Password is required!'],
     },
+
+    profile: {
+      id: {
+        type: Types.ObjectId,
+        refPath: 'profile.role',
+        default: null,
+      },
+      role: {
+        type: String,
+        default: 'user',
+      },
+    },
+
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
+
     status: {
       type: String,
       enum: {
@@ -54,29 +75,6 @@ export const userSchema = new mongoose.Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    activeSubscription: {
-      id: {
-        type: Types.ObjectId || null,
-        ref: 'SubscriptionPurchase',
-        default: null,
-      },
-      title: {
-        type: String,
-        default: null,
-      },
-    },
-     stripeCustomerId: {
-      type: String,
-      default: null,
-    },
-    role: {
-      type: String,
-      default: "user"
-    },
-     profile: {
-        type: Types.ObjectId,
-        ref: 'profile',
-    },
   },
   {
     timestamps: true,
@@ -96,7 +94,6 @@ userSchema.pre('save', function (next) {
   next();
 });
 
-
 userSchema.methods.comparePassword = function (userPlanePassword: string) {
   return bcrypt.compareSync(userPlanePassword, this.password);
 };
@@ -105,15 +102,13 @@ userSchema.methods.compareVerificationCode = function (userPlaneCode: string) {
   return bcrypt.compareSync(userPlaneCode, this.verification.code);
 };
 
-
 userSchema.set('toJSON', {
-  versionKey:false,
+  versionKey: false,
   transform: (_doc, ret) => {
     delete ret.password;
     return ret;
-  }
+  },
 });
-
 
 userSchema.index({
   firstName: 'text',
