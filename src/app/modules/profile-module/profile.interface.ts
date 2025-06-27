@@ -1,19 +1,21 @@
-import { Document, Types} from "mongoose"
+import  { Document, Schema, Types } from 'mongoose';
+
 
 enum Gender {
-    Male = 'male',
-    Female = 'female',
-    Other = 'other',
-  }
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
+}
 
-  interface ISocialLinks {
+interface ISocialLinks {
   facebook: string;
-  twitter: string;
-  linkedin: string;
+  tiktok: string;
+  threads: string;
   instagram: string;
+  dribble:string;
 }
 export interface IBaseProfile extends Document {
-  user:Types.ObjectId;
+  user: Schema.Types.ObjectId;
   firstName: string;
   lastName: string;
   bio: string;
@@ -24,9 +26,5 @@ export interface IBaseProfile extends Document {
   gender: Gender;
   dateOfBirth: Date;
   image: string;
-  country: string;
-  verificationType: string;
-  verificationImage: string;
-  isfaceVerified: boolean;
-  isProfileVisible: boolean;
+  isProfileVisible:boolean
 }

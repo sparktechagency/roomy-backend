@@ -28,15 +28,14 @@ const resendEmailVerificationCode = handleAsync(async (req: Request, res: Respon
   user.verification = verification;
   await user.save();
 
-  // send email verification mail
+
   const content = `Your email veirfication code is ${verification?.code}`;
-  // const verificationLink = `${config.server_base_url}/v1/auth/verify-email/${user._id}?userCode=${verification.code}`
-  // const content = `Click the following link to verify your email: ${verificationLink}`
+  
   const mailOptions = {
     from: config.gmail_app_user as string,
     to: email,
-    subject: 'Car Verify - Email Verification',
-    text: content,
+    subject: 'Email Verification',
+    html: content,
   };
 
   sendMail(mailOptions);

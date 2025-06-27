@@ -8,7 +8,7 @@ import User from './user.model';
 
 
 // register user
-const registerController = handleAsync(async (req: Request, res: Response) => {
+const registerUser = handleAsync(async (req: Request, res: Response) => {
   const userData = req.body;
   const role = userData.role;
   const user = await User.findOne({ $or: [{ email: userData.email, phone: userData.phone }] });
@@ -32,5 +32,5 @@ const registerController = handleAsync(async (req: Request, res: Response) => {
 
 
 export default {
-  registerController,
+  registerUser,
 };

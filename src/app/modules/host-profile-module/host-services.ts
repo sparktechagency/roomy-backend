@@ -1,10 +1,11 @@
 import { ClientSession } from "mongoose";
-import hostProfile from "./host-model";
+
 import { IHostProfile } from "./host-interface";
+import HostProfile from "./host-model";
 
 
 const createHostProfile = async (data: IHostProfile, session?: ClientSession) => {
-  return await new hostProfile(data).save({ session });
+  return await new HostProfile(data).save({ session });
 };
 
 export default {

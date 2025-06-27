@@ -1,10 +1,11 @@
 import { ClientSession } from "mongoose";
 import { IGuestProfile } from "./guest.interface";
-import guestProfile from "./guest.model";
+import GuestProfile from "./guest.model";
+
 
 
 const createGuestProfile = async (data: IGuestProfile, session?: ClientSession) => {
-  return await new guestProfile(data).save({ session });
+  return await new GuestProfile(data).save({ session });
 };
 
 export default {

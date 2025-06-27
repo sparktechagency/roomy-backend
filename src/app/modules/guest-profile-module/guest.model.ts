@@ -28,27 +28,23 @@ const guestProfileSchema = new Schema<IGuestProfile>(
     dateOfBirth: { type: Date, required: [true, 'Date of birth is required'] },
 
     // Optional fields
-    bio: {type: String, default: ''} ,
-    antecode: {type: String, default: ''} ,
-    profileImage: {type: String, default: ''} ,
-    photoGallery: {type:[String], default:[]},
+    bio: { type: String, default: '' },
+    antecode: { type: String, default: '' },
+    profileImage: { type: String, default: '' },
+    photoGallery: { type: [String], default: [] },
     socialLinks: {
       type: socialLinksSchema,
       default: {},
     },
-    image: {type: String, default: ''} ,
-    country: {type: String, default: ''} ,
-    verificationType: {type: String, default: ''},
-    verificationImage: {type: String, default: ''},
-    isfaceVerified: { type: Boolean, default: false },
+    image: { type: String, default: '' },
     isProfileVisible: { type: Boolean, default: true },
   },
+  
   {
     timestamps: true,
   },
 );
 
+const GuestProfile = mongoose.model<IGuestProfile>('GuestProfile', guestProfileSchema);
 
-const guestProfile = mongoose.model<IGuestProfile>('guestProfile', guestProfileSchema);
-
-export default guestProfile;
+export default GuestProfile;

@@ -21,13 +21,13 @@ const userEmailVerify = handleAsync(async (req: Request, res: Response) => {
 
   const now = new Date();
   if (user.verification?.expireDate && user.verification?.expireDate < now) {
-    throw new CustomError.BadRequestError('Sorry, Email verification Code using date expired!');
+    throw new CustomError.BadRequestError('Your email verification code is expired!');
   }
 
   // update the email verification status of user
 
-  await User.findByIdAndUpdate(user._id, { isEmailVerified: true });
   await User.findByIdAndUpdate(user._id, {
+    isEmailVerified: true,
     verification: { code: null, expireDate: null },
   });
 

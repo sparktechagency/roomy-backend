@@ -25,7 +25,7 @@ const getAccessTokenByRefreshToken = handleAsync(async (req: Request, res: Respo
 
   const payload = {
     email: user.email,
-    roles: user.role,
+    roles: user.profile.role,
   };
 
   const newAccessToken = jwtHelpers.createToken(

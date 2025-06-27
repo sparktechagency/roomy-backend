@@ -1,14 +1,13 @@
-import { StatusCodes } from "http-status-codes";
-import sendResponse from "../../../../../shared/sendResponse";
-import sendMail from "../../../../../utilities/sendEmail";
-import config from "../../../../../config";
-import handleAsync from "../../../../../shared/handleAsync";
-import { Request, Response } from "express";
-import CustomError from "../../../../errors";
-import authServices from "../auth.services";
-import IdGenerator from "../../../../../utilities/idGenerator";
-import otpMailTemplate from "../../../../../mailTemplate/otpMailTemplate";
-
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import config from '../../../../../config';
+import otpMailTemplate from '../../../../../mailTemplate/otpMailTemplate';
+import handleAsync from '../../../../../shared/handleAsync';
+import sendResponse from '../../../../../shared/sendResponse';
+import IdGenerator from '../../../../../utilities/idGenerator';
+import sendMail from '../../../../../utilities/sendEmail';
+import CustomError from '../../../../errors';
+import authServices from '../admin.auth.services';
 
 const sendOTP = handleAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -33,12 +32,11 @@ const sendOTP = handleAsync(async (req: Request, res: Response) => {
   userExistance.verification = verification;
   await userExistance.save();
 
-
   const mailOptions = {
     from: config.gmail_app_user as string,
     to: email,
     subject: 'Password Reset OTP',
-    html: otpMailTemplate(code,expiredTime),
+    html: otpMailTemplate(code, expiredTime),
   };
 
   sendMail(mailOptions);
@@ -50,5 +48,4 @@ const sendOTP = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-export default sendOTP
+export default sendOTP;

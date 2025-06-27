@@ -37,18 +37,13 @@ const hostProfileSchema = new Schema<IHostProfile>(
       default: {},
     },
     image: { type: String, default: '' },
-    country: { type: String, default: '' },
-    verificationType: { type: String, default: '' },
-    verificationImage: { type: String, default: '' },
     isPrimeHost: { type: Boolean, default: false },
-    isfaceVerified: { type: Boolean, default: false },
-    isProfileVisible: { type: Boolean, default: true },
   },
   {
     timestamps: true,
   },
 );
 
-const hostProfile = mongoose.model<IHostProfile>('hostProfile', hostProfileSchema);
+const HostProfile = mongoose.model<IHostProfile>('HostProfile', hostProfileSchema);
 
-export default hostProfile;
+export default HostProfile;

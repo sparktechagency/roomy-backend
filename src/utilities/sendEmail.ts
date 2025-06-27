@@ -7,11 +7,19 @@ interface MailOptions {
   from: string;
   to: string;
   subject: string;
-  text: string;
+  html: any;
 }
 
+const currentDate = new Date();
+
+const formattedDate = currentDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+});
+
 // Define the sendMail function
-const sendMail = async ({ from, to, subject, text }: MailOptions): Promise<boolean> => {
+const sendMail = async ({ from, to, subject, html }: MailOptions): Promise<boolean> => {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -24,8 +32,9 @@ const sendMail = async ({ from, to, subject, text }: MailOptions): Promise<boole
     const mailOptions: SendMailOptions = {
       from,
       to,
+      date:formattedDate,
       subject,
-      text,
+      html,
     };
 
     // Wait for the sendMail operation to complete

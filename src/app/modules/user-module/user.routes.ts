@@ -6,7 +6,7 @@ import userController from './user.controller';
 
 const userRouter = express.Router();
 
-userRouter.post('/create',requestValidator(userValidationZodSchema.registerUserValidationSchema),userController.registerController)
+userRouter.post('/create',requestValidator(userValidationZodSchema.registerUserValidationSchema),userController.registerUser)
 
 
 export default userRouter;
