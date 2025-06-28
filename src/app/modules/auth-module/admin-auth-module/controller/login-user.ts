@@ -8,7 +8,7 @@ import sendResponse from '../../../../../shared/sendResponse';
 import CustomError from '../../../../errors';
 import authServices from '../admin.auth.services';
 
-const userLogin = handleAsync(async (req: Request, res: Response) => {
+const AdminLogin = handleAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const user: any = await authServices.getUserByEmail(email);
@@ -56,4 +56,4 @@ const userLogin = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-export default userLogin;
+export default AdminLogin;
