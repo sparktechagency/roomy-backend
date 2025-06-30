@@ -2,14 +2,14 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import Stripe from 'stripe';
 import CustomError from '../app/errors';
-import { SubscriptionPurchase } from '../app/modules/subscriptionPurchaseModule/subscriptionPurchase.model';
-import subscriptionPurchaseServices from '../app/modules/subscriptionPurchaseModule/subscriptionPurchase.services';
+import { SubscriptionPurchase } from '../app/modules/subscriptionPurchase/subscriptionPurchase.model';
+import subscriptionPurchaseServices from '../app/modules/subscriptionPurchase/subscriptionPurchase.services';
 
 import config from '../config';
 
-import Subscription from '../app/modules/subscriptionModule/subscription.model';
-import { PaymentSourceType, PaymentStatus } from '../app/modules/subscriptionPurchaseModule/subscriptionPurchase.interface';
-import User from '../app/modules/user-module/user.model';
+import Subscription from '../app/modules/subscription/subscription.model';
+import { PaymentSourceType, PaymentStatus } from '../app/modules/subscriptionPurchase/subscriptionPurchase.interface';
+import User from '../app/modules/user/user.model';
 import handleAsync from '../shared/handleAsync';
 import sendMail from '../utilities/sendEmail';
 

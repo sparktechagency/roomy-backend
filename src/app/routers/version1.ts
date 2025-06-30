@@ -1,8 +1,11 @@
 import express from 'express';
-import userRouter from '../modules/user-module/user.routes';
-import verificationRouter from '../modules/verification-module/verification.routes';
-import userAuthRouter from '../modules/auth-module/user-auth-module/auth.routes';
-import adminAuthRouter from '../modules/auth-module/admin-auth-module/auth.routes';
+import adminAuthRouter from '../modules/auth/adminAuth/auth.routes';
+import userAuthRouter from '../modules/auth/userAuth/auth.routes';
+import listingRouter from '../modules/listing/listing.routes';
+import userRouter from '../modules/user/user.routes';
+import verificationRouter from '../modules/verification/verification.routes';
+import blogRouter from '../modules/blog/blog.routes';
+
 
 const routersVersionOne = express.Router();
 
@@ -11,17 +14,25 @@ const appRouters = [
     path: '/user',
     router: userRouter,
   },
-   {
+  {
     path: '/user/auth',
     router: userAuthRouter,
   },
-    {
+  {
     path: '/admin/auth',
     router: adminAuthRouter,
   },
   {
     path: '/verification',
-    router: verificationRouter, 
+    router: verificationRouter,
+  },
+  {
+    path: '/listing',
+    router: listingRouter,
+  },
+  {
+    path: '/blog',
+    router: blogRouter,
   },
 ];
 

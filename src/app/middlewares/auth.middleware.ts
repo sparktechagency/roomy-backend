@@ -1,12 +1,11 @@
-import { NextFunction, Request, Response,  } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import { ENUM_USER_ROLE } from '../../enums/user-role';
 import jwtHelpers from '../../helpers/jwtHelpers';
 import CustomError from '../errors';
-import adminServices from '../modules/admin-module/admin.services';
-import { userServices } from '../modules/user-module/services';
-import { JwtPayload } from 'jsonwebtoken';
-
+import adminServices from '../modules/admin/admin.services';
+import { userServices } from '../modules/user/services';
 
 const getUserByRole = async (payload: any) => {
   const { id, role } = payload;
@@ -20,21 +19,19 @@ const getUserByRole = async (payload: any) => {
   return user;
 };
 
-
 const authentication = (...requiredRoles: string[]) => {
-  return async (req:Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers['authorization'];
       const token = authHeader && authHeader.split(' ')[1];
 
       if (!token) throw new CustomError.UnAuthorizedError('Unauthorized access!');
 
-      const payload = jwtHelpers.verifyToken(token, config.jwt_access_token_secret as string) as JwtPayload ;
+      const payload = jwtHelpers.verifyToken(token, config.jwt_access_token_secret as string) as JwtPayload;
       if (!payload) throw new CustomError.UnAuthorizedError('Invalid token!');
-      
-      req.user  = payload
+
+      req.user = payload;
       const user: any = getUserByRole(payload);
-     
 
       if (user.status === 'disabled') {
         throw new CustomError.BadRequestError('Your current account is disabled!');
@@ -56,14 +53,13 @@ const authentication = (...requiredRoles: string[]) => {
       if (requiredRoles.length && !requiredRoles.includes(payload.role)) {
         throw new CustomError.ForbiddenError('Forbidden!');
       }
-          
+
       next();
     } catch (error) {
       next(error);
     }
   };
 };
-
 
 // export const validateUserStatus = (user: any) => {
 //   if (user.status === 'disabled') {
