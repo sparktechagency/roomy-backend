@@ -5,7 +5,8 @@ import { ENUM_USER_ROLE } from '../../enums/user-role';
 import jwtHelpers from '../../helpers/jwtHelpers';
 import CustomError from '../errors';
 import adminServices from '../modules/admin/admin.services';
-import { userServices } from '../modules/user/services';
+import userServices from '../modules/user/user.services';
+
 
 const getUserByRole = async (payload: any) => {
   const { id, role } = payload;
@@ -60,32 +61,5 @@ const authentication = (...requiredRoles: string[]) => {
     }
   };
 };
-
-// export const validateUserStatus = (user: any) => {
-//   if (user.status === 'disabled') {
-//     throw new CustomError.BadRequestError('Your current account is disabled!');
-//   }
-//   if (user.status === 'blocked') {
-//     throw new CustomError.BadRequestError('Currently your account is blocked by admin!');
-//   }
-// };
-
-// export const validateUserSpecificChecks = (user: any, payload: any) => {
-//   if (payload.role !== ENUM_USER_ROLE.ADMIN && payload.role !== ENUM_USER_ROLE.SUPER_ADMIN) {
-//     if (!user.isEmailVerified) {
-//       throw new CustomError.UnAuthorizedError('Unauthorized user');
-//     }
-
-//     if (user.isDeleted) {
-//       throw new CustomError.BadRequestError('User not found');
-//     }
-//   }
-// };
-
-// export const validateUserRole = (role: string, requiredRoles: string[]) => {
-//   if (requiredRoles.length && !requiredRoles.includes(role)) {
-//     throw new CustomError.ForbiddenError('Forbidden!');
-//   }
-// };
 
 export default authentication;

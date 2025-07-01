@@ -1,16 +1,19 @@
 import { Request, Response } from 'express';
-import adminServices from './admin.services';
-import CustomError from '../../errors';
-import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 import handleAsync from '../../../shared/handleAsync';
-
-
+import sendResponse from '../../../shared/sendResponse';
+import CustomError from '../../errors';
+import Admin from './admin.model';
+import adminServices from './admin.services';
 
 // controller for create new admin
 const createAdmin = handleAsync(async (req: Request, res: Response) => {
   const adminData = req.body;
 
+  const isAdminExist = await Admin.findOne({ email: adminData.email });
+  if (isAdminExist) {
+    throw new CustomError.BadRequestError('This admin already exist');
+  }
   const admin = await adminServices.createAdmin(adminData);
   if (!admin) {
     throw new CustomError.BadRequestError('Failed to create new admin!');
@@ -55,7 +58,6 @@ const getSpecificAdmin = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 // controller for update specific admin
 const updateSpecificAdmin = handleAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -92,15 +94,13 @@ const deleteSpecificAdmin = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 //update user status
 
 // export const updateUserStatus = async (req: Request, res: Response) => {
- 
-//     const { id } = req.params; 
-//     const { status } = req.body; 
 
-    
+//     const { id } = req.params;
+//     const { status } = req.body;
+
 //     if (!['active', 'blocked' ,'disabled',].includes(status)) {
 //       throw new CustomError.BadRequestError('Invalid status value');
 //     }
@@ -123,8 +123,6 @@ const deleteSpecificAdmin = handleAsync(async (req: Request, res: Response) => {
 //     });
 
 // };
-
-
 
 // const updateUserInfoOrStatusChanged = async (req: Request, res: Response) => {
 
@@ -186,13 +184,8 @@ const deleteSpecificAdmin = handleAsync(async (req: Request, res: Response) => {
 //     //   message: 'User info updated successfully',
 //     //   data: result,
 //     // });
-  
+
 // };
-
-
-
-
-
 
 export default {
   createAdmin,

@@ -20,6 +20,10 @@ const adminSchema = new mongoose.Schema<IAdmin>(
         message: (props) => `${props.value} is not a valid email!`,
       },
     },
+    profileImage: {
+      type: String,
+      default: ''
+    },
     password: {
       type: String,
       trim: true,

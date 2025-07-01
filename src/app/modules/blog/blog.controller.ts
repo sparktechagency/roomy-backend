@@ -17,15 +17,59 @@ const createBlog = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-const recentsBlog = handleAsync(async (req: Request, res: Response) => {});
+const getAllBlogsByRole = handleAsync(async (req: Request, res: Response) => {
+  const user: any = req.user;
+  const result = await blogServices.retrieveAllBlogsByRole(req.query, user.role);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'Blog data has been retrieved succesfully',
+    data: result,
+  });
+});
 
-const getAllBlogsByRole = handleAsync(async (req: Request, res: Response) => {});
+const recentsBlog = handleAsync(async (req: Request, res: Response) => {
+  const result = await blogServices.retrieveRecentBlogs(3);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'Blog data has been retrieved succesfully',
+    data: result,
+  });
+});
 
-const getAllBlogs = handleAsync(async (req: Request, res: Response) => {});
+const getAllBlogs = handleAsync(async (req: Request, res: Response) => {
+  const result = await blogServices.retrieveAllBlogs(req.query);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'Blog data has been retrieved succesfully',
+    data: result,
+  });
+});
 
-const editBlog = handleAsync(async (req: Request, res: Response) => {});
+const editBlog = handleAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const data = req.body;
+  const result = await blogServices.updateBlog(id, data);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'Blog data has been updated succesfully',
+    data: result,
+  });
+});
 
-const deleteBlog = handleAsync(async (req: Request, res: Response) => {});
+const deleteBlog = handleAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await blogServices.deleteBlog(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'Blog data has been deleted succesfully',
+    data: result,
+  });
+});
 
 export default {
   createBlog,

@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 interface IAdmin extends Document {
   fullName: string;
   email: string;
+  profileImage: string;
   password: string;
   status: string;
   isEmailVerified: boolean;

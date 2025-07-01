@@ -29,7 +29,7 @@ const deleteBlog = async (id: string) => {
 };
 
 const retrieveAllBlogsByRole = async (
-  query: Record<string, any>,
+  query: Record<string, any>, role:string
 ): Promise<{
   meta: {
     page: number;
@@ -42,25 +42,18 @@ const retrieveAllBlogsByRole = async (
   const page = parseInt(query.page as string) || 1;
   const limit = parseInt(query.limit as string) || 10;
   const skip = (page - 1) * limit;
-  const searchTerm = (query.searchTerm as string)?.trim() || '';
-  const role = query.role || 'guest';
+ 
 
   const matchStage: any = {};
 
-  if (searchTerm) {
-    matchStage.$or = [
-      { title: { $regex: searchTerm, $options: 'i' } },
-      { category: { $regex: searchTerm, $options: 'i' } },
-      { status: { $regex: searchTerm, $options: 'i' } },
-    ];
-  }
-
+ 
   if (role === 'guest') {
-    matchStage.viewrs = { $in: ['guest', 'both'] };
+    matchStage.viewers = { $in: ['guest', 'both'] };
   } else if (role === 'host') {
-    matchStage.viewrs = { $in: ['host', 'both'] };
+    matchStage.viewers = { $in: ['host', 'both'] };
   }
-
+ 
+  console.log(matchStage)
   const result = await Blog.aggregate([
     { $match: matchStage },
     {
@@ -85,8 +78,8 @@ const retrieveAllBlogsByRole = async (
   };
 };
 
-const getAllBlogs = async (
-  query: Record<string, any>,
+const retrieveAllBlogs = async (
+  query: Record<string, any>
 ): Promise<{
   meta: {
     page: number;
@@ -99,13 +92,20 @@ const getAllBlogs = async (
   const page = parseInt(query.page as string) || 1;
   const limit = parseInt(query.limit as string) || 10;
   const skip = (page - 1) * limit;
+   const searchTerm = (query.searchTerm as string)?.trim() || '';
+ 
+  const matchStage: any = {};
+
+  if (searchTerm) {
+    matchStage.$or = [
+      { title: { $regex: searchTerm, $options: 'i' } },
+      { category: { $regex: searchTerm, $options: 'i' } },
+      { status: { $regex: searchTerm, $options: 'i' } },
+    ];
+  }
 
   const result = await Blog.aggregate([
-    {
-      $match: {
-        status: 'published',
-      },
-    },
+    { $match: matchStage }, 
     {
       $facet: {
         data: [{ $sort: { createdAt: -1 } }, { $skip: skip }, { $limit: limit }],
@@ -128,6 +128,7 @@ const getAllBlogs = async (
   };
 };
 
+
 const retrieveRecentBlogs = async (limit: number) => {
   const result = await Blog.aggregate([{ $match: { status: 'published' } }, { $sort: { createdAt: -1 } }, { $limit: limit }]);
   return result;
@@ -139,5 +140,5 @@ export default {
   deleteBlog,
   retrieveAllBlogsByRole,
   retrieveRecentBlogs,
-  getAllBlogs,
+  retrieveAllBlogs,
 };

@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface IBlog extends Document {
+interface IBlog extends Document {
   title: string;
   description: string;
   category: string;
