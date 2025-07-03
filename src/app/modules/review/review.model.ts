@@ -20,7 +20,7 @@ const reviewSchema = new mongoose.Schema(
     },
     avgRating: {
       type: Number,
-      required: false
+      default: 0
     },
     comment: {
       type: String,
@@ -30,30 +30,6 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
-reviewSchema.virtual('averageRating').get(function (this: any) {
-  const ratings = this.ratings as {
-    security?: number;
-    cleanliness?: number;
-    comfort?: number;
-    price?: number;
-  };
-
-  const values = [
-    ratings.security ?? 0,
-    ratings.cleanliness ?? 0,
-    ratings.comfort ?? 0,
-    ratings.price ?? 0,
-  ].filter(v => v > 0);
-
-  if (values.length === 0) return 0;
-  return values.reduce((acc, val) => acc + val, 0) / values.length;
-});
-
-reviewSchema.set('toObject', { virtuals: true });
-reviewSchema.set('toJSON', { virtuals: true });
-
-
 
 const Review = mongoose.model('Review', reviewSchema)
 export default Review;

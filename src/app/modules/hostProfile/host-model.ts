@@ -24,7 +24,7 @@ const hostProfileSchema = new Schema<IHostProfile>(
       enum: ['male', 'female', 'other'],
       required: [true, 'Gender is required'],
     },
-
+    address: { type: String, required: [true, 'adress is required'] },
     dateOfBirth: { type: Date, required: [true, 'Date of birth is required'] },
 
     // Optional fields

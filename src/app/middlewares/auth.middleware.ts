@@ -25,16 +25,13 @@ const authentication = (...requiredRoles: string[]) => {
     try {
       const authHeader = req.headers['authorization'];
       const token = authHeader && authHeader.split(' ')[1];
-      console.log(token)
+
       if (!token) throw new CustomError.UnAuthorizedError('Unauthorized access!');
-       console.log(requiredRoles)
       const payload = jwtHelpers.verifyToken(token, config.jwt_access_token_secret as string) as JwtPayload;
       if (!payload) throw new CustomError.UnAuthorizedError('Invalid token!');
 
       req.user = payload;
       const user: any = await getUserByRole(payload);
-      console.log(user)
-      console.log(payload)
       if (user.status === 'disabled') {
         throw new CustomError.BadRequestError('Your current account is disabled!');
       }

@@ -1,4 +1,4 @@
-import  { Document, Schema, Types } from 'mongoose';
+import  { Document, Schema} from 'mongoose';
 
 
 enum Gender {
@@ -20,6 +20,7 @@ export interface IBaseProfile extends Document {
   lastName: string;
   bio: string;
   antecode: string;
+  address: string;
   profileImage: string;
   photoGallery: string[];
   socialLinks: ISocialLinks;

@@ -6,7 +6,9 @@ import registrationEmailTemplate from '../../../mailTemplate/registrationTemplat
 import IdGenerator from '../../../utilities/idGenerator';
 import sendMail from '../../../utilities/sendEmail';
 import CustomError from '../../errors';
+import GuestProfile from '../guestProfile/guest.model';
 import guestServices from '../guestProfile/guest.services';
+import HostProfile from '../hostProfile/host-model';
 import hostServices from '../hostProfile/host-services';
 import { IBaseProfile } from '../profile/profile.interface';
 import IUser from './user.interface';
@@ -83,6 +85,166 @@ export const createUser = async (data: IUser & IBaseProfile, role: string) => {
   return result;
 };
 
+const retrieveAllGuests = async (
+  query: Record<string, any>,
+): Promise<{
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  data: any[];
+}> => {
+  const page = parseInt(query.page as string) || 1;
+  const limit = parseInt(query.limit as string) || 10;
+  const skip = (page - 1) * limit;
+
+  const searchTerm = query.searchTerm || '';
+  const searchRegex = { $regex: searchTerm, $options: 'i' };
+
+  const [result] = await GuestProfile.aggregate([
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    { $unwind: '$user' },
+    {
+      $match: {
+        $and: [
+          {
+            $or: [{ firstName: searchRegex }, { lastName: searchRegex }, { address: searchRegex }, { 'user.email': searchRegex }],
+          },
+        ],
+      },
+    },
+    {
+      $facet: {
+        data: [
+          {
+            $project: {
+              _id: 1,
+              fullName: {
+                $concat: [{ $ifNull: ['$firstName', ''] }, ' ', { $ifNull: ['$lastName', ''] }],
+              },
+              profileImage: 1,
+              address: 1,
+              email: '$user.email',
+            },
+          },
+          { $skip: skip },
+          { $limit: limit },
+        ],
+        meta: [{ $count: 'total' }],
+      },
+    },
+  ]);
+
+  const total = result.meta[0]?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+    data: result.data,
+  };
+};
+
+const retrieveAllHosts = async (
+  query: Record<string, any>,
+): Promise<{
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  data: any[];
+}> => {
+  const page = parseInt(query.page as string) || 1;
+  const limit = parseInt(query.limit as string) || 10;
+  const skip = (page - 1) * limit;
+
+  const searchTerm = query.searchTerm || '';
+  const searchRegex = { $regex: searchTerm, $options: 'i' };
+
+  const [result] = await HostProfile.aggregate([
+    // 🔁 1. Lookup listings FIRST (before we overwrite `user`)
+    {
+      $lookup: {
+        from: 'listings',
+        localField: 'user',
+        foreignField: 'host',
+        as: 'listings',
+      },
+    },
+    {
+      $addFields: {
+        listingCount: { $size: '$listings' },
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    { $unwind: '$user' },
+
+    {
+      $match: {
+        $or: [{ firstName: searchRegex }, { lastName: searchRegex }, { address: searchRegex }, { 'user.email': searchRegex }],
+      },
+    },
+
+    {
+      $facet: {
+        data: [
+          {
+            $project: {
+              _id: '$user._id',
+              profileImage: 1,
+              address: 1,
+              email: '$user.email',
+              fullName: {
+                $concat: [{ $ifNull: ['$firstName', ''] }, ' ', { $ifNull: ['$lastName', ''] }],
+              },
+              listingCount: 1,
+            },
+          },
+          { $skip: skip },
+          { $limit: limit },
+        ],
+        meta: [{ $count: 'total' }],
+      },
+    },
+  ]);
+
+  const total = result.meta[0]?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+    data: result.data,
+  };
+};
+
 const getSpecificUser = async (id: string) => {
   try {
     const user = await User.findById(id);
@@ -98,4 +260,6 @@ const getSpecificUser = async (id: string) => {
 export default {
   createUser,
   getSpecificUser,
+  retrieveAllGuests,
+  retrieveAllHosts,
 };

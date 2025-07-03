@@ -4,7 +4,7 @@ import CustomError from '../../errors';
 import IReview from './review.interface';
 import Review from './review.model';
 import Listing from '../listing/listing.model';
-import IListing from '../listing/listing.interface';
+
 
 const addReviewIntoDb = async (data: IReview) => {
   return withTransaction(async (session: ClientSession) => {

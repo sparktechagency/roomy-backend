@@ -26,6 +26,7 @@ const guestProfileSchema = new Schema<IGuestProfile>(
     },
 
     dateOfBirth: { type: Date, required: [true, 'Date of birth is required'] },
+    address: { type: String, required: [true, 'adress is required'] },
 
     // Optional fields
     bio: { type: String, default: '' },
