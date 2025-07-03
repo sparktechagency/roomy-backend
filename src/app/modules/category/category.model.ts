@@ -5,7 +5,6 @@ const categorySchema = new Schema<ICategory>(
   {
     name: { type: String, required: [true, 'name is required'] },
     categoryImage: { type: String, required: [true, 'category image is required'] },
-
     status: {
       type: String,
       enum: ['active', 'inactive'],
@@ -17,5 +16,5 @@ const categorySchema = new Schema<ICategory>(
   },
 );
 
-const Blog = mongoose.model<ICategory>('Blog', categorySchema);
-export default Blog;
+const Category = mongoose.model<ICategory>('Category', categorySchema);
+export default Category;

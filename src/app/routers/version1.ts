@@ -6,6 +6,8 @@ import listingRouter from '../modules/listing/listing.routes';
 import userRouter from '../modules/user/user.routes';
 import verificationRouter from '../modules/verification/verification.routes';
 import adminRouter from '../modules/admin/admin.routes';
+import categoryRouter from '../modules/category/category.routes';
+import reviewRouter from '../modules/review/review.routes';
 
 const routersVersionOne = express.Router();
 
@@ -37,6 +39,14 @@ const appRouters = [
   {
     path: '/blog',
     router: blogRouter,
+  },
+  {
+    path: '/category',
+    router: categoryRouter,
+  },
+  {
+    path: '/review',
+    router: reviewRouter,
   },
 ];
 

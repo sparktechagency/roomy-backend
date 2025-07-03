@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import handleAsync from '../../../shared/handleAsync';
 import sendResponse from '../../../shared/sendResponse';
+import CustomError from '../../errors';
+import IBlog from './blog.interfaces';
 import blogServices from './blog.services';
 
 const createBlog = handleAsync(async (req: Request, res: Response) => {
@@ -50,15 +52,38 @@ const getAllBlogs = handleAsync(async (req: Request, res: Response) => {
 
 const editBlog = handleAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const data = req.body;
-  const result = await blogServices.updateBlog(id, data);
+
+  const file = req.files as unknown as Record<string, Express.Multer.File[]>;
+  const rawData = req.body?.data;
+
+  if (!rawData) {
+    throw new CustomError.BadRequestError('Missing blog data');
+  }
+
+  let data: Partial<IBlog>;
+  try {
+    data = JSON.parse(rawData);
+  } catch {
+    throw new CustomError.BadRequestError('Invalid JSON in blog data');
+  }
+
+  const image = file?.blog_image?.[0]?.path;
+
+  const updatedData: Partial<IBlog> = {
+    ...data,
+    ...(image && { image }),
+  };
+
+  const result = await blogServices.updateBlog(id, updatedData);
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     status: 'success',
-    message: 'Blog data has been updated succesfully',
+    message: 'Blog data has been updated successfully',
     data: result,
   });
 });
+
 
 const deleteBlog = handleAsync(async (req: Request, res: Response) => {
   const { id } = req.params;

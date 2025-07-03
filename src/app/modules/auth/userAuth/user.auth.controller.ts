@@ -27,7 +27,7 @@ const userLogin = handleAsync(async (req: Request, res: Response) => {
   const payload = {
     id: user._id,
     email: user.email,
-    role: user.role,
+    role: user.profile.role,
   };
 
   const accessToken = jwtHelpers.createToken(
@@ -46,7 +46,7 @@ const userLogin = handleAsync(async (req: Request, res: Response) => {
     name: user.profile.name,
     email: user.email,
     _id: user._id,
-    role: user.role,
+    profile: user.profile,
     accessToken,
     refreshToken,
     isEmailVerified: user.isEmailVerified,

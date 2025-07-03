@@ -19,7 +19,9 @@ export const uploadFile = () => {
         uploadPath = 'uploads/room_images';
       } else if (file.fieldname === 'blog_image') {
         uploadPath = 'uploads/blog_image';
-      } else if (file.fieldname === 'front_part') {
+      }else if(file.fieldname === 'category_image'){
+        uploadPath = 'uploads/category_image';
+      }else if (file.fieldname === 'front_part') {
         uploadPath = 'uploads/front_images';
       } else if (file.fieldname === 'back_part') {
         uploadPath = 'uploads/back_images';
@@ -43,7 +45,7 @@ export const uploadFile = () => {
 
   // File filter
   const fileFilter = (_req: Request, file: any, cb: any) => {
-    const allowedFieldnames = ['profile_image', 'room_gallery', 'blog_image', 'front_part', 'back_part'];
+    const allowedFieldnames = ['profile_image', 'room_gallery','category_image', 'blog_image', 'front_part', 'back_part'];
 
     if (!file.fieldname) {
       return cb(null, true);
@@ -68,6 +70,7 @@ export const uploadFile = () => {
     { name: 'profile_image', maxCount: 1 },
     { name: 'room_gallery', maxCount: 10 },
     { name: 'blog_image', maxCount: 1 },
+    { name: 'category_image', maxCount: 1 },
     { name: 'front_part', maxCount: 1 },
     { name: 'back_part', maxCount: 1 },
   ]);

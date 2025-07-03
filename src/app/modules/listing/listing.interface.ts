@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document, Types, Schema } from 'mongoose';
 
 interface IRoom {
   name: string;
@@ -59,8 +59,14 @@ interface IRooms {
   list?: IRoom[];
 }
 
+interface IReview {
+  totalReviews: number;
+  avgRating: number;
+}
+
+
 interface IListing extends Document {
-  user?: Types.ObjectId;
+  host?: Types.ObjectId;
   roomType: string;
   isFurnished?: string;
   title: string;
@@ -89,7 +95,7 @@ interface IListing extends Document {
   inspection: IInspection[];
   isEnableCancellation: boolean;
   refundPolicy?: string[];
-  review: Types.ObjectId;
+  reviews: IReview;
   createdAt: Date,
   updatedAt: Date
 }

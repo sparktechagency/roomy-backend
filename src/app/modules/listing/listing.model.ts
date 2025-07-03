@@ -34,7 +34,7 @@
 //           lon: { type: Number, required: [true, 'longitude is required'] },
 //         },
 //         required: true,
-         
+
 //       },
 //       postCode: { type: String, required: [true, 'post code is required'] },
 //     },
@@ -48,7 +48,7 @@
 //       from: { type: Date, required: true },
 //       to: { type: Date, required: true },
 //     },
-    
+
 //   },
 
 //   stay: {
@@ -138,8 +138,6 @@
 // const Listing = mongoose.model<IListing>('Listing', listingSchema);
 // export default Listing;
 
-
-
 import mongoose, { Schema } from 'mongoose';
 import IListing from './listing.interface';
 
@@ -149,7 +147,7 @@ const locationSchema = new Schema(
     lat: { type: Number, required: [true, 'latitude is required'] },
     lon: { type: Number, required: [true, 'longitude is required'] },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const addressSchema = new Schema(
@@ -158,7 +156,7 @@ const addressSchema = new Schema(
     location: { type: locationSchema, required: true },
     postCode: { type: String, required: [true, 'post code is required'] },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const staySchema = new Schema(
@@ -166,7 +164,7 @@ const staySchema = new Schema(
     minimum: { type: String, required: [true, 'minimum time is required'] },
     maximum: { type: String, required: [true, 'maximum time is required'] },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const pricingSchema = new Schema(
@@ -174,7 +172,7 @@ const pricingSchema = new Schema(
     weeklyRent: { type: Number, required: [true, 'weekly rent is required'] },
     bondAmount: { type: Number, required: [true, 'bond amount is required'] },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const availabilitySchema = new Schema(
@@ -182,7 +180,7 @@ const availabilitySchema = new Schema(
     from: { type: Date, required: true },
     to: { type: Date, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const amenitiesSchema = new Schema(
@@ -190,7 +188,7 @@ const amenitiesSchema = new Schema(
     roomEquipments: { type: [String], required: true },
     propertyEquipments: { type: [String], required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const inspectionSchema = new Schema(
@@ -198,7 +196,7 @@ const inspectionSchema = new Schema(
     dateOfVisit: { type: Date, required: true },
     hoursOfVisit: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const bedsSchema = new Schema(
@@ -208,9 +206,16 @@ const bedsSchema = new Schema(
     queen: { type: Number, default: 0 },
     king: { type: Number, default: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
+const reviewSchema = new Schema(
+  {
+    totalReviews: { type: Number, default: 0 },
+    averageRating: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
 
 const roomSchema = new Schema(
   {
@@ -220,12 +225,12 @@ const roomSchema = new Schema(
     queen: { type: Number, default: 0 },
     king: { type: Number, default: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // Main listing schema
 const listingSchema = new Schema<IListing>({
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  host: { type: Schema.Types.ObjectId, ref: 'User' },
   roomType: { type: String, required: true },
   isFurnished: { type: String },
   title: { type: String, required: [true, 'title is required'] },
@@ -244,7 +249,7 @@ const listingSchema = new Schema<IListing>({
 
   beds: {
     type: bedsSchema,
-    required:true
+    required: true,
   },
 
   guests: {
@@ -286,9 +291,9 @@ const listingSchema = new Schema<IListing>({
 
   isEnableCancellation: { type: Boolean, required: true },
   refundPolicy: [{ type: String, default: [] }],
-  review: {
-    type: Schema.Types.ObjectId,
-    ref: 'Review',
+  reviews: {
+    type: reviewSchema,
+    required: true,
   },
 });
 
