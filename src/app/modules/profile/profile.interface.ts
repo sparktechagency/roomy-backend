@@ -1,3 +1,4 @@
+
 import  { Document, Schema} from 'mongoose';
 
 
@@ -5,6 +6,11 @@ enum Gender {
   Male = 'male',
   Female = 'female',
   Other = 'other',
+}
+
+enum UserRole {
+  Host = 'host',
+  Guest = 'guest',
 }
 
 interface ISocialLinks {
@@ -21,11 +27,14 @@ export interface IBaseProfile extends Document {
   bio: string;
   antecode: string;
   address: string;
+  role: UserRole;
   profileImage: string;
   photoGallery: string[];
   socialLinks: ISocialLinks;
   gender: Gender;
   dateOfBirth: Date;
   image: string;
-  isProfileVisible:boolean
+  isProfileVisible:boolean;
+  isPrimeHost?: boolean;
 }
+

@@ -8,6 +8,7 @@ import verificationRouter from '../modules/verification/verification.routes';
 import adminRouter from '../modules/admin/admin.routes';
 import categoryRouter from '../modules/category/category.routes';
 import reviewRouter from '../modules/review/review.routes';
+import profileRouter from '../modules/profile/profile.routes';
 
 const routersVersionOne = express.Router();
 
@@ -15,6 +16,10 @@ const appRouters = [
   {
     path: '/user',
     router: userRouter,
+  },
+  {
+    path: '/profile',
+    router: profileRouter,
   },
   {
     path: '/admin',

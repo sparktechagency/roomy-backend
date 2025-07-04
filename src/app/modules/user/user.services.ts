@@ -1,20 +1,18 @@
-import { ClientSession } from 'mongoose';
+import mongoose, { ClientSession } from 'mongoose';
 import config from '../../../config';
-import { ENUM_USER_ROLE } from '../../../enums/user-role';
+import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../../../enums/user-role';
 import withTransaction from '../../../helpers/withTransaction';
 import registrationEmailTemplate from '../../../mailTemplate/registrationTemplate';
 import IdGenerator from '../../../utilities/idGenerator';
 import sendMail from '../../../utilities/sendEmail';
 import CustomError from '../../errors';
-import GuestProfile from '../guestProfile/guest.model';
-import guestServices from '../guestProfile/guest.services';
-import HostProfile from '../hostProfile/host-model';
-import hostServices from '../hostProfile/host-services';
 import { IBaseProfile } from '../profile/profile.interface';
+import Profile from '../profile/profile.model';
 import IUser from './user.interface';
 import User from './user.model';
 
-export const createUser = async (data: IUser & IBaseProfile, role: string) => {
+//
+export const createUserIntoDb = async (data: IUser & IBaseProfile, role: string) => {
   const result = await withTransaction(async (session: ClientSession) => {
     const verificationCode = IdGenerator.generateNumberId();
     const expiredTime = 30;
@@ -46,19 +44,26 @@ export const createUser = async (data: IUser & IBaseProfile, role: string) => {
       firstName: data.firstName,
       lastName: data.lastName,
       gender: data.gender,
+      address: data.address,
       dateOfBirth: data.dateOfBirth,
+      role: data.role,
+      ...(role === ENUM_USER_ROLE.HOST && { isPrimeHost: false }),
     };
 
     switch (role) {
       case ENUM_USER_ROLE.GUEST:
-        const guestProfile = await guestServices.createGuestProfile(profilePayload, session);
+        const [guestProfile] = await Profile.create([profilePayload], {
+          session,
+        });
         newUser.profile.id = guestProfile._id;
         newUser.profile.role = role;
         await newUser.save({ session });
         break;
 
       case ENUM_USER_ROLE.HOST:
-        const hostProfile = await hostServices.createHostProfile(profilePayload, session);
+        const [hostProfile] = await Profile.create([profilePayload], {
+          session,
+        });
         newUser.profile.id = hostProfile._id;
         newUser.profile.role = role;
         await newUser.save({ session });
@@ -77,7 +82,7 @@ export const createUser = async (data: IUser & IBaseProfile, role: string) => {
       subject: 'Email Verification',
       html: registrationEmailTemplate(fullName, verificationCode, expiredTime, 'Roomy'),
     };
-    sendMail(mailOptions);
+    setTimeout(() => sendMail(mailOptions), 0);
 
     return { ...userInfo };
   });
@@ -85,164 +90,51 @@ export const createUser = async (data: IUser & IBaseProfile, role: string) => {
   return result;
 };
 
-const retrieveAllGuests = async (
-  query: Record<string, any>,
-): Promise<{
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-  data: any[];
-}> => {
-  const page = parseInt(query.page as string) || 1;
-  const limit = parseInt(query.limit as string) || 10;
-  const skip = (page - 1) * limit;
-
-  const searchTerm = query.searchTerm || '';
-  const searchRegex = { $regex: searchTerm, $options: 'i' };
-
-  const [result] = await GuestProfile.aggregate([
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'user',
-        foreignField: '_id',
-        as: 'user',
-      },
-    },
-    { $unwind: '$user' },
-    {
-      $match: {
-        $and: [
-          {
-            $or: [{ firstName: searchRegex }, { lastName: searchRegex }, { address: searchRegex }, { 'user.email': searchRegex }],
-          },
-        ],
-      },
-    },
-    {
-      $facet: {
-        data: [
-          {
-            $project: {
-              _id: 1,
-              fullName: {
-                $concat: [{ $ifNull: ['$firstName', ''] }, ' ', { $ifNull: ['$lastName', ''] }],
-              },
-              profileImage: 1,
-              address: 1,
-              email: '$user.email',
-            },
-          },
-          { $skip: skip },
-          { $limit: limit },
-        ],
-        meta: [{ $count: 'total' }],
-      },
-    },
-  ]);
-
-  const total = result.meta[0]?.total || 0;
-  const totalPages = Math.ceil(total / limit);
-
+const changeUserStatus = async (id: string, status: string) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new CustomError.BadRequestError('User not found');
+  }
+  if (![ENUM_USER_STATUS.ACTIVE as string, ENUM_USER_STATUS.BLOCKED as string].includes(status)) {
+    throw new CustomError.BadRequestError('invalid status');
+  }
+  const result = await User.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
   return {
-    meta: {
-      page,
-      limit,
-      total,
-      totalPages,
-    },
-    data: result.data,
+    _id: result?._id,
+    email: result?.email,
+    status: result?.status,
   };
 };
 
-const retrieveAllHosts = async (
-  query: Record<string, any>,
-): Promise<{
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-  data: any[];
-}> => {
-  const page = parseInt(query.page as string) || 1;
-  const limit = parseInt(query.limit as string) || 10;
-  const skip = (page - 1) * limit;
-
-  const searchTerm = query.searchTerm || '';
-  const searchRegex = { $regex: searchTerm, $options: 'i' };
-
-  const [result] = await HostProfile.aggregate([
-    // 🔁 1. Lookup listings FIRST (before we overwrite `user`)
+const retrieveUserDetails = async (userId: string) => {
+  const result = await User.aggregate([
     {
-      $lookup: {
-        from: 'listings',
-        localField: 'user',
-        foreignField: 'host',
-        as: 'listings',
-      },
+      $match: { _id: new mongoose.Types.ObjectId(userId) },
     },
     {
-      $addFields: {
-        listingCount: { $size: '$listings' },
-      },
-    },
-
-    {
       $lookup: {
-        from: 'users',
-        localField: 'user',
+        from: 'profiles',
+        localField: 'profile.id',
         foreignField: '_id',
-        as: 'user',
+        as: 'profile',
       },
     },
-    { $unwind: '$user' },
-
+    { $unwind: '$profile' },
     {
-      $match: {
-        $or: [{ firstName: searchRegex }, { lastName: searchRegex }, { address: searchRegex }, { 'user.email': searchRegex }],
-      },
-    },
-
-    {
-      $facet: {
-        data: [
-          {
-            $project: {
-              _id: '$user._id',
-              profileImage: 1,
-              address: 1,
-              email: '$user.email',
-              fullName: {
-                $concat: [{ $ifNull: ['$firstName', ''] }, ' ', { $ifNull: ['$lastName', ''] }],
-              },
-              listingCount: 1,
-            },
-          },
-          { $skip: skip },
-          { $limit: limit },
-        ],
-        meta: [{ $count: 'total' }],
+      $project: {
+        _id: 1,
+        email: 1,
+        profileImage: '$profile.profileImage',
+        name: {
+          $concat: ['$profile.firstName', ' ', '$profile.lastName'],
+        },
+        role: '$profile.role',
+        address: '$profile.address',
       },
     },
   ]);
-
-  const total = result.meta[0]?.total || 0;
-  const totalPages = Math.ceil(total / limit);
-
-  return {
-    meta: {
-      page,
-      limit,
-      total,
-      totalPages,
-    },
-    data: result.data,
-  };
+  console.log(result[0]);
+  return result[0];
 };
 
 const getSpecificUser = async (id: string) => {
@@ -258,8 +150,8 @@ const getSpecificUser = async (id: string) => {
 };
 
 export default {
-  createUser,
+  createUserIntoDb,
   getSpecificUser,
-  retrieveAllGuests,
-  retrieveAllHosts,
+  changeUserStatus,
+  retrieveUserDetails,
 };

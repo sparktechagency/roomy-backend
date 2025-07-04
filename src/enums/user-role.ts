@@ -7,6 +7,5 @@ export enum ENUM_USER_ROLE {
 
 export enum ENUM_USER_STATUS {
   ACTIVE = 'active',
-  BLOCK = 'block',
-  DISABLED = 'disabled'
+  BLOCKED = 'blocked',
 }

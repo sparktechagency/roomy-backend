@@ -43,6 +43,10 @@ const registerUserValidationSchema = z.object({
       required_error: 'Gender is required',
     }),
 
+    role: z.enum(['guest', 'host'], {
+      required_error: 'profile is required',
+    }),
+
     dateOfBirth: z
       .string({
         required_error: 'Date of birth is required',

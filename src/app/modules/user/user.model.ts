@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import mongoose, { Types } from 'mongoose';
 import validator from 'validator';
-import { ENUM_USER_STATUS } from '../../../enums/user-role';
+import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../../../enums/user-role';
 import IUser from './user.interface';
 
 export const userSchema = new mongoose.Schema<IUser>(
@@ -39,11 +39,13 @@ export const userSchema = new mongoose.Schema<IUser>(
     profile: {
       id: {
         type: Types.ObjectId,
-        refPath: 'profile.role',
+        ref: 'Profile',
         default: null,
       },
       role: {
         type: String,
+        enum: [ENUM_USER_ROLE.GUEST, ENUM_USER_ROLE.HOST],
+        required: false,
       },
     },
 
@@ -55,8 +57,8 @@ export const userSchema = new mongoose.Schema<IUser>(
     status: {
       type: String,
       enum: {
-        values: [ENUM_USER_STATUS.ACTIVE, ENUM_USER_STATUS.BLOCK, ENUM_USER_STATUS.DISABLED],
-        message: '{VALUE} is not accepted as a status value. Use active/blocked/disabled.',
+        values: [ENUM_USER_STATUS.ACTIVE, ENUM_USER_STATUS.BLOCKED],
+        message: '{VALUE} is not accepted as a status value. Use active | blocked.',
       },
       default: 'active',
     },
@@ -116,5 +118,5 @@ userSchema.index({
   phone: 'text',
 });
 
-const User = mongoose.model<IUser>('user', userSchema);
+const User = mongoose.model<IUser>('User', userSchema);
 export default User;

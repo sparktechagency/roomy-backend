@@ -12,16 +12,27 @@ import CustomError from '../../../errors';
 import User from '../../user/user.model';
 import userAuthServices from './user.auth.services';
 
+
 const userLogin = handleAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const user: any = await userAuthServices.getUserByEmail(email);
 
-  if (!user) throw new CustomError.BadRequestError('Invalid email or password!');
+  if (!user) throw new CustomError.BadRequestError('user not found');
+
+  if (user.isDeleted) {
+    throw new CustomError.ForbiddenError('This user is already deleted');
+  }
+  if (user.status === 'blocked') {
+    throw new CustomError.ForbiddenError('This user is blocked');
+  }
+  if (!user.isEmailVerified) {
+    throw new CustomError.ForbiddenError('You are not verified user .Please verify your email');
+  }
 
   // check the password is correct
   const isPasswordMatch = user.comparePassword(password);
-  if (!isPasswordMatch) throw new CustomError.BadRequestError('Invalid email or password');
+  if (!isPasswordMatch) throw new CustomError.BadRequestError(`password didn't match`);
 
   // generate token
   const payload = {
