@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ENUM_USER_ROLE } from '../../../enums/user-role';
+import { ENUM_USER_ROLE } from '../../../enums/enum';
 import handleAsync from '../../../shared/handleAsync';
 import sendResponse from '../../../shared/sendResponse';
 import CustomError from '../../errors';

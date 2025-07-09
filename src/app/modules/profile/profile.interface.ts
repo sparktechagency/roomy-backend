@@ -33,7 +33,6 @@ export interface IBaseProfile extends Document {
   socialLinks: ISocialLinks;
   gender: Gender;
   dateOfBirth: Date;
-  image: string;
   isProfileVisible:boolean;
   isPrimeHost?: boolean;
 }

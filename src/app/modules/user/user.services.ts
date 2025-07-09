@@ -1,6 +1,6 @@
 import mongoose, { ClientSession } from 'mongoose';
 import config from '../../../config';
-import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../../../enums/user-role';
+import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../../../enums/enum';
 import withTransaction from '../../../helpers/withTransaction';
 import registrationEmailTemplate from '../../../mailTemplate/registrationTemplate';
 import IdGenerator from '../../../utilities/idGenerator';
@@ -120,6 +120,17 @@ const retrieveUserDetails = async (userId: string) => {
       },
     },
     { $unwind: '$profile' },
+
+    {
+      $lookup: {
+        from: 'verifications',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'verification',
+      },
+    },
+    { $unwind: { path: '$verification', preserveNullAndEmptyArrays: true } },
+
     {
       $project: {
         _id: 1,
@@ -130,6 +141,8 @@ const retrieveUserDetails = async (userId: string) => {
         },
         role: '$profile.role',
         address: '$profile.address',
+        verificationFrontImage: '$verification.verificationImage.frontPart',
+        verificationBackImage: '$verification.verificationImage.backPart',
       },
     },
   ]);

@@ -37,6 +37,8 @@ const getSingleUserDetails = handleAsync(async (req, res) => {
   });
 });
 
+
+
 const changeUserStatus = handleAsync(async (req, res) => {
   const { status } = req.body;
   const result = await userServices.changeUserStatus(req.params.id, status);

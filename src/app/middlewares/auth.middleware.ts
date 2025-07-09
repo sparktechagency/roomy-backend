@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
-import { ENUM_USER_ROLE } from '../../enums/user-role';
+import { ENUM_USER_ROLE } from '../../enums/enum';
 import jwtHelpers from '../../helpers/jwtHelpers';
 import CustomError from '../errors';
 import adminServices from '../modules/admin/admin.services';
 import userServices from '../modules/user/user.services';
-
 
 const getUserByRole = async (payload: any) => {
   const { id, role } = payload;
@@ -41,7 +40,7 @@ const authentication = (...requiredRoles: string[]) => {
 
       if (payload.role !== ENUM_USER_ROLE.ADMIN && payload.role !== ENUM_USER_ROLE.SUPER_ADMIN) {
         if (!user.isEmailVerified) {
-          console.log('access')
+          console.log('access');
           throw new CustomError.UnAuthorizedError('Unauthorized user');
         }
 
@@ -49,7 +48,7 @@ const authentication = (...requiredRoles: string[]) => {
           throw new CustomError.BadRequestError('User not found');
         }
       }
-      console.log(payload.role)
+      console.log(payload.role);
       if (requiredRoles.length && !requiredRoles.includes(payload.role)) {
         throw new CustomError.ForbiddenError('Forbidden!');
       }

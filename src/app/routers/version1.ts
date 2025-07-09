@@ -9,6 +9,9 @@ import adminRouter from '../modules/admin/admin.routes';
 import categoryRouter from '../modules/category/category.routes';
 import reviewRouter from '../modules/review/review.routes';
 import profileRouter from '../modules/profile/profile.routes';
+import platformFeeRouter from '../modules/platformFee/platform.routes';
+import termsConditionRouter from '../modules/termsCondition/termsCondition.routes';
+import privacyPolicyRouter from '../modules/privacyPolicy/privacyPolicy.routes';
 
 const routersVersionOne = express.Router();
 
@@ -52,6 +55,18 @@ const appRouters = [
   {
     path: '/review',
     router: reviewRouter,
+  },
+  {
+    path: '/platform-fee',
+    router: platformFeeRouter,
+  },
+   {
+    path: '/terms-condition',
+    router: termsConditionRouter,
+  },
+  {
+    path: '/privacy-policy',
+    router: privacyPolicyRouter,
   },
 ];
 

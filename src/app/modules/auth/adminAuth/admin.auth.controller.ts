@@ -151,6 +151,7 @@ const sendOTP = handleAsync(async (req: Request, res: Response) => {
 
 const verifyOTP = handleAsync(async (req: Request, res: Response) => {
   const { email, otp } = req.body;
+  console.log(email)
   if (!email || !otp) {
     throw new CustomError.BadRequestError('Missing data in request body!');
   }
@@ -159,8 +160,9 @@ const verifyOTP = handleAsync(async (req: Request, res: Response) => {
   if (!userExistance) {
     throw new CustomError.NotFoundError('User not found!');
   }
-
+  console.log(userExistance)
   const isMatchOTP = userExistance.compareVerificationCode(otp);
+  console.log(isMatchOTP)
   if (!isMatchOTP) {
     throw new CustomError.BadRequestError('Invalid OTP!');
   }

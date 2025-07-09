@@ -3,10 +3,11 @@ import TermsCondition from './termsCondition.model';
 import CustomError from '../../errors';
 import { StatusCodes } from 'http-status-codes';
 import sendResponse from '../../../shared/sendResponse';
-import asyncHandler from '../../../shared/asyncHandler';
+import handleAsync from '../../../shared/handleAsync';
+
 
 // Controller to create or update Terms and Conditions content
-const createOrUpdateTermsCondition = asyncHandler(async (req: Request, res: Response) => {
+const createOrUpdateTermsCondition = handleAsync(async (req: Request, res: Response) => {
   const { termsCondition } = req.body;
 
   // Check if Terms and Conditions content exists; if it does, update, otherwise create
@@ -14,13 +15,13 @@ const createOrUpdateTermsCondition = asyncHandler(async (req: Request, res: Resp
 
   if (existingTermsCondition) {
     // Update the existing Terms and Conditions record
-    const updatedTermsCondition = await TermsCondition.updateOne(
+    const updatedTermsCondition = await TermsCondition.findByIdAndUpdate(
       { _id: existingTermsCondition._id },
       { termsCondition },
       { runValidators: true },
     );
 
-    if (!updatedTermsCondition.modifiedCount) {
+    if (!updatedTermsCondition) {
       throw new CustomError.BadRequestError('Failed to update Terms and Conditions');
     }
 
@@ -28,6 +29,7 @@ const createOrUpdateTermsCondition = asyncHandler(async (req: Request, res: Resp
       statusCode: StatusCodes.OK,
       status: 'success',
       message: 'Terms and Conditions updated successfully',
+      data: updatedTermsCondition
     });
   } else {
     // Create a new Terms and Conditions record
@@ -41,12 +43,13 @@ const createOrUpdateTermsCondition = asyncHandler(async (req: Request, res: Resp
       statusCode: StatusCodes.CREATED,
       status: 'success',
       message: 'Terms and Conditions created successfully',
+      data: newTermsCondition
     });
   }
 });
 
 // Controller to get Terms and Conditions content
-const getTermsCondition = asyncHandler(async (req: Request, res: Response) => {
+const getTermsCondition = handleAsync(async (req: Request, res: Response) => {
   const termsCondition = await TermsCondition.findOne();
 
   if (!termsCondition) {

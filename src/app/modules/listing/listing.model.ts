@@ -270,7 +270,7 @@ const listingSchema = new Schema<IListing>({
     },
     default: {},
   },
-
+  utilities: { type: String, enum: ['include', 'separate'], default: 'include' },
   totalBathrooms: { type: Number, required: [true, 'total bathroom is required'] },
   bathroomType: { type: String, required: [true, 'bathroom type is required'] },
   isLiftAvailable: { type: Boolean, default: true },
@@ -293,9 +293,78 @@ const listingSchema = new Schema<IListing>({
   refundPolicy: [{ type: String, default: [] }],
   reviews: {
     type: reviewSchema,
-    required: true,
   },
+
 });
+
+listingSchema.index({ city: 1 });
+listingSchema.index({ roomType: 1 });
+listingSchema.index({ 'pricing.weeklyRent': 1 });
+listingSchema.index({ utilities: 1 });
+listingSchema.index({ 'amenities.roomEquipments': 1 });
+listingSchema.index({ 'amenities.propertyEquipments': 1 });
 
 const Listing = mongoose.model<IListing>('Listing', listingSchema);
 export default Listing;
+
+
+
+
+/*
+
+{
+  $lookup: {
+    from: 'bookings',
+    let: { listingId: '$_id' },
+    pipeline: [
+      {
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: ['$listingId', '$$listingId'] },
+              { $in: ['$status', ['booked', 'active']] },
+              { $lt: ['$checkIn', requestedCheckOut] },
+              {
+                $gt: [
+                  {
+                    $dateAdd: {
+                      startDate: '$checkOut',
+                      unit: 'day',
+                      amount: { $ifNull: ['$extensionDays', 0] }
+                    }
+                  },
+                  requestedCheckIn
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    as: 'conflictingBookings'
+  }
+},
+{
+  $addFields: {
+    totalOccupants: {
+      $sum: '$conflictingBookings.occupants'
+    }
+  }
+},
+{
+  $match: {
+    $or: [
+      {
+        roomType: { $in: ['private', 'apartment'] },
+        totalOccupants: { $eq: 0 }
+      },
+      {
+        roomType: 'shared',
+        $expr: { $lt: ['$totalOccupants', '$maxOccupants'] }
+      }
+    ]
+  }
+}
+
+
+*/

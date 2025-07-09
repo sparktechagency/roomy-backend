@@ -89,6 +89,7 @@ interface IListing extends Document {
   buildingAmenities: string[];
   amenities: IAmenities;
   preferPerson?: 'male' | 'female' | 'both';
+  utilities: 'include' | 'separate'
   preferredAgeGroup: number;
   isAcceptSmoke: boolean;
   houseRules: string[];

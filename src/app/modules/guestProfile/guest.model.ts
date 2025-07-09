@@ -37,7 +37,6 @@ const guestProfileSchema = new Schema<IGuestProfile>(
       type: socialLinksSchema,
       default: {},
     },
-    image: { type: String, default: '' },
     isProfileVisible: { type: Boolean, default: true },
   },
   

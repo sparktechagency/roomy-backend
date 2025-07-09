@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import mongoose, { Types } from 'mongoose';
 import validator from 'validator';
-import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../../../enums/user-role';
+import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../../../enums/enum';
 import IUser from './user.interface';
 
 export const userSchema = new mongoose.Schema<IUser>(

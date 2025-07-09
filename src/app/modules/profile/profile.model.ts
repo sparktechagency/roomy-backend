@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
+import { ENUM_USER_ROLE } from '../../../enums/enum';
 import { IBaseProfile } from './profile.interface';
-import { ENUM_USER_ROLE } from '../../../enums/user-role';
 
 const socialLinksSchema = new Schema(
   {
@@ -42,7 +42,7 @@ const profileSchema = new Schema<IBaseProfile>(
       type: socialLinksSchema,
       default: {},
     },
-    image: { type: String, default: '' },
+    isProfileVisible: { type: Boolean },
     isPrimeHost: { type: Boolean },
   },
   {

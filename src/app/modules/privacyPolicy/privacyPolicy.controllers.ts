@@ -3,10 +3,11 @@ import PrivacyPolicy from './privacyPolicy.model';
 import CustomError from '../../errors';
 import { StatusCodes } from 'http-status-codes';
 import sendResponse from '../../../shared/sendResponse';
-import asyncHandler from '../../../shared/asyncHandler';
+import handleAsync from '../../../shared/handleAsync';
+
 
 // Controller to create or update Privacy Policy content
-const createOrUpdatePrivacyPolicy = asyncHandler(async (req: Request, res: Response) => {
+const createOrUpdatePrivacyPolicy = handleAsync(async (req: Request, res: Response) => {
   const { privacyPolicy } = req.body;
 
   // Check if Privacy Policy exists; if it does, update, otherwise create
@@ -14,13 +15,13 @@ const createOrUpdatePrivacyPolicy = asyncHandler(async (req: Request, res: Respo
 
   if (existingPrivacyPolicy) {
     // Update the existing Privacy Policy record
-    const updatedPrivacyPolicy = await PrivacyPolicy.updateOne(
+    const updatedPrivacyPolicy = await PrivacyPolicy.findByIdAndUpdate(
       { _id: existingPrivacyPolicy._id },
       { privacyPolicy },
       { runValidators: true },
     );
 
-    if (!updatedPrivacyPolicy.modifiedCount) {
+    if (!updatedPrivacyPolicy) {
       throw new CustomError.BadRequestError('Failed to update Privacy Policy');
     }
 
@@ -28,6 +29,7 @@ const createOrUpdatePrivacyPolicy = asyncHandler(async (req: Request, res: Respo
       statusCode: StatusCodes.OK,
       status: 'success',
       message: 'Privacy Policy updated successfully',
+      data: updatedPrivacyPolicy
     });
   } else {
     // Create a new Privacy Policy record
@@ -41,12 +43,13 @@ const createOrUpdatePrivacyPolicy = asyncHandler(async (req: Request, res: Respo
       statusCode: StatusCodes.CREATED,
       status: 'success',
       message: 'Privacy Policy created successfully',
+      data: newPrivacyPolicy
     });
   }
 });
 
 // Controller to get Privacy Policy content
-const getPrivacyPolicy = asyncHandler(async (req: Request, res: Response) => {
+const getPrivacyPolicy = handleAsync(async (req: Request, res: Response) => {
   const privacyPolicy = await PrivacyPolicy.findOne();
 
   if (!privacyPolicy) {

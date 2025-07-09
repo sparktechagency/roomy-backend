@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ENUM_USER_ROLE } from '../../../enums/user-role';
+import { ENUM_USER_ROLE } from '../../../enums/enum';
 import handleAsync from '../../../shared/handleAsync';
 import sendResponse from '../../../shared/sendResponse';
 import CustomError from '../../errors';
@@ -31,6 +31,18 @@ const createListing = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSpecificListing = handleAsync(async (req: Request, res: Response) => {
+  console.log(req.query);
+  const result = await listingServices.retrieveSpecificListings(req.query);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'listing data has been retrieved succesfully!',
+    data: result,
+  });
+});
+
 export default {
   createListing,
+  getSpecificListing,
 };

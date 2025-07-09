@@ -14,8 +14,8 @@ const runServer = async () => {
   await mongoose.connect(config.mongodb_url as string);
   console.log('\x1b[36mDatabase connection successfull\x1b[0m');
 
-  server = app.listen(config.server_port || 5002, () => {
-    console.log(`\x1b[32mServer is listening on port ${config.server_port || 5020}\x1b[0m`);
+  server = app.listen(config.server_port || 5002, config.base_url as string, () => {
+    console.log(`\x1b[32mServer is listening on port http://${config.base_url}:${config.server_port || 5020}\x1b[0m`);
   });
 };
 

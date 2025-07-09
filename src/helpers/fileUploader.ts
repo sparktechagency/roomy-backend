@@ -23,6 +23,8 @@ export const uploadFile = () => {
         uploadPath = 'uploads/category_image';
       }else if (file.fieldname === 'front_part') {
         uploadPath = 'uploads/front_images';
+      }else if (file.fieldname === 'profile_gallery') {
+        uploadPath = 'uploads/profile_gallery';
       } else if (file.fieldname === 'back_part') {
         uploadPath = 'uploads/back_images';
       } else {
@@ -33,7 +35,6 @@ export const uploadFile = () => {
         fs.mkdirSync(uploadPath, { recursive: true });
       }
 
-      // ✅ Don't check file type here — leave it to fileFilter
       cb(null, uploadPath);
     },
 
@@ -45,7 +46,7 @@ export const uploadFile = () => {
 
   // File filter
   const fileFilter = (_req: Request, file: any, cb: any) => {
-    const allowedFieldnames = ['profile_image', 'room_gallery','category_image', 'blog_image', 'front_part', 'back_part'];
+    const allowedFieldnames = ['profile_image', 'profile_gallery', 'room_gallery','category_image', 'blog_image', 'front_part', 'back_part'];
 
     if (!file.fieldname) {
       return cb(null, true);
@@ -68,6 +69,7 @@ export const uploadFile = () => {
     fileFilter: fileFilter,
   }).fields([
     { name: 'profile_image', maxCount: 1 },
+    { name: 'profile_gallery', maxCount: 20},
     { name: 'room_gallery', maxCount: 10 },
     { name: 'blog_image', maxCount: 1 },
     { name: 'category_image', maxCount: 1 },

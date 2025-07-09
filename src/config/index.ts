@@ -13,7 +13,7 @@ const envSchema = z.object({
   SERVER_URL: z.string().min(1, 'Server URL is required'),
   FRONTEND_URL: z.string().min(1, 'frontend url is required'),
   MONGODB_URL: z.string().min(1, 'MongoDB connection URL is required'),
-
+  BASE_URL: z.string().min(1, 'base URL is required'),
   JWT_ACCESS_TOKEN_SECRET: z.string().min(1, 'Access token secret key is required'),
   JWT_ACCESS_TOKEN_EXPIRESIN: z.string().default('14d'),
   JWT_REFRESH_TOKEN_SECRET: z.string().min(1, 'Refresh token secret key is required'),
@@ -33,7 +33,7 @@ export default {
   server_name: envVars.SERVER_NAME,
   mongodb_url: envVars.MONGODB_URL,
   frontend_url: envVars.FRONTEND_URL,
-
+  base_url: envVars.BASE_URL,
   jwt_access_token_secret: envVars.JWT_ACCESS_TOKEN_SECRET,
   jwt_access_token_expiresin: envVars.JWT_ACCESS_TOKEN_EXPIRESIN,
   jwt_refresh_token_secret: envVars.JWT_REFRESH_TOKEN_SECRET,

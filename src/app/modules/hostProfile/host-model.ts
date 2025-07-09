@@ -36,7 +36,6 @@ const hostProfileSchema = new Schema<IHostProfile>(
       type: socialLinksSchema,
       default: {},
     },
-    image: { type: String, default: '' },
     isPrimeHost: { type: Boolean, default: false },
   },
   {

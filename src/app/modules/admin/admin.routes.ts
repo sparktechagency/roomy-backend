@@ -1,7 +1,5 @@
 import express from 'express';
 import adminControllers from './admin.controllers';
-import authentication from '../../middlewares/auth.middleware';
-import { ENUM_USER_ROLE } from '../../../enums/user-role';
 
 const adminRouter = express.Router();
 

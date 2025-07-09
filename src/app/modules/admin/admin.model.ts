@@ -75,6 +75,8 @@ adminSchema.methods.comparePassword = function (adminPlanePassword: string) {
 };
 
 adminSchema.methods.compareVerificationCode = function (adminPlaneCode: string) {
+  console.log(adminPlaneCode)
+  console.log(this.verification.code)
   return bcrypt.compareSync(adminPlaneCode, this.verification.code);
 };
 

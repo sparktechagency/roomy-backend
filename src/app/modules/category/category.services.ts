@@ -1,4 +1,4 @@
-import { ENUM_USER_ROLE } from '../../../enums/user-role';
+import { ENUM_USER_ROLE } from '../../../enums/enum';
 import CustomError from '../../errors';
 import ICategory from './category.interface';
 import Category from './category.model';
@@ -51,5 +51,5 @@ export default {
   createCategoryIntoDb,
   retrieveAllCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 };
