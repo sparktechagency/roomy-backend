@@ -42,6 +42,16 @@ const getSpecificListing = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
+// const getMapListView = handleAsync(async(req:Request,res:Response)=>{
+//  const result = await listingServices.retrieveMapListings(req.query);
+//  sendResponse(res, {
+//     statusCode: StatusCodes.OK,
+//     status: 'success',
+//     message: 'listing data has been retrieved succesfully!',
+//     data: result,
+//   });
+// })
+
 export default {
   createListing,
   getSpecificListing,

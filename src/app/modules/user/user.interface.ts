@@ -13,6 +13,8 @@ interface IUser extends Document {
   };
   status: string;
   isEmailVerified: boolean;
+  stripeCustomerId: string
+  stripeAccountId?:string;
   verification?: {
     code: string;
     expireDate: Date;

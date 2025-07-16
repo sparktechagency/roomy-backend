@@ -132,6 +132,14 @@ const retrieveRecentBlogs = async (limit: number) => {
   return result;
 };
 
+const retrieveSpecificBlogDetails = async (id: string) => {
+  const result = await Blog.findById(id);
+  if (!result) {
+    throw new CustomError.BadRequestError('blog are not found');
+  }
+  return result;
+};
+
 export default {
   createBlog,
   updateBlog,
@@ -139,4 +147,5 @@ export default {
   retrieveAllBlogsByRole,
   retrieveRecentBlogs,
   retrieveAllBlogs,
+  retrieveSpecificBlogDetails,
 };

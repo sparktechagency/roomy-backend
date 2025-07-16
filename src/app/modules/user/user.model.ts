@@ -72,6 +72,12 @@ export const userSchema = new mongoose.Schema<IUser>(
         default: null,
       },
     },
+    stripeAccountId: {
+      type: String,
+    },
+    stripeCustomerId: {
+      type: String,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

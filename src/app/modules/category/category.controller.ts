@@ -22,6 +22,7 @@ const createCategory = handleAsync(async (req: Request, res: Response) => {
 
 const getAllCategory = handleAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
+  console.log(user)
   const result = await categoryServices.retrieveAllCategory(user.role);
   sendResponse(res, {
     statusCode: StatusCodes.OK,

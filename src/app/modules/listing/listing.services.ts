@@ -65,7 +65,7 @@ const retrieveSpecificListings = async (
       amenitiesConditions.push({ [`amenities.roomEquipments.${key}`]: true }, { [`amenities.propertyEquipments.${key}`]: true });
     }
   }
-   console.log(matchStage)
+  console.log(matchStage);
   //Combine match with amenities (if any)
   const finalMatchStage = amenitiesConditions.length > 0 ? { $and: [matchStage, { $or: amenitiesConditions }] } : matchStage;
 
@@ -76,48 +76,48 @@ const retrieveSpecificListings = async (
 
   //Aggregation Pipeline
   const pipeline: any[] = [
-   { $match: finalMatchStage },
-  { $sort: { createdAt: -1 } },
-  {
-    $facet: {
-      data: [
-        { $skip: skip },
-        { $limit: limit },
-        {
-          $project: {
-            _id: 1,
-            roomType: 1,
-            minStay: '$stay.minimum',
-            title: 1,
-            rating: '$reviews.averageRating',
-            pricePerWeek: '$pricing.weeklyRent',
-            bond: '$pricing.bondAmount',
-            description: 1,
-            guests: {
-              $add: ['$guests.totalMale', '$guests.totalFemale']
+    { $match: finalMatchStage },
+    { $sort: { createdAt: -1 } },
+    {
+      $facet: {
+        data: [
+          { $skip: skip },
+          { $limit: limit },
+          {
+            $project: {
+              _id: 1,
+              roomType: 1,
+              minStay: '$stay.minimum',
+              title: 1,
+              rating: '$reviews.averageRating',
+              pricePerWeek: '$pricing.weeklyRent',
+              bond: '$pricing.bondAmount',
+              description: 1,
+              guests: {
+                $add: ['$guests.totalMale', '$guests.totalFemale'],
+              },
+              city: 1,
             },
-            city: 1
-          }
-        }
-      ],
-      meta: [{ $count: 'total' }]
-    }
-  },
-  {
-    $unwind: {
-      path: '$meta',
-      preserveNullAndEmptyArrays: true
-    }
-  },
-  {
-    $addFields: {
-      'meta.total': { $ifNull: ['$meta.total', 0] }
-    }
-  }
+          },
+        ],
+        meta: [{ $count: 'total' }],
+      },
+    },
+    {
+      $unwind: {
+        path: '$meta',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        'meta.total': { $ifNull: ['$meta.total', 0] },
+      },
+    },
   ];
 
   const result = await Listing.aggregate(pipeline);
-  console.log(result)
+  console.log(result);
   const total = result[0]?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
@@ -131,6 +131,35 @@ const retrieveSpecificListings = async (
     data: result[0]?.data || [],
   };
 };
+
+
+// const retrieveMapListings = async (
+//   query: Record<string, any>,
+// ): Promise<{
+//   meta: {
+//     page: number;
+//     limit: number;
+//     total: number;
+//     totalPages: number;
+//   };
+//   data: any[];
+// }> => {
+
+// const result = await Listing.aggregate(pipeline);
+// console.log(result)
+// const total = result[0]?.meta?.total || 0;
+// const totalPages = Math.ceil(total / limit);
+
+// return {
+//   meta: {
+//     page,
+//     limit,
+//     total,
+//     totalPages,
+//   },
+//   data: result[0]?.data || [],
+// };
+// };
 
 export default {
   createListingIntoDb,

@@ -1,20 +1,17 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
-import fileUpload from 'express-fileupload';
 import { StatusCodes } from 'http-status-codes';
 import path from 'path';
 import config from './config';
 
-import CustomError from './app/errors';
-import { errorHandler, successHandler } from './config/morgan';
-
 import compression from 'compression';
+import CustomError from './app/errors';
 import globalErrorHandler from './app/middlewares/globalHandle.error';
 import notFound from './app/middlewares/notFound.route';
 import routers from './app/routers';
 import { compressionOptions } from './config/compression.config';
-import { helmetConfig } from './config/helmet.config';
+import { errorHandler, successHandler } from './config/morgan';
 import { applyRateLimit } from './config/rateLimit.config';
 import rootDesign from './helpers/rootDesign';
 
@@ -22,28 +19,7 @@ const app: Application = express();
 
 // app.post('/webhook', express.raw({ type: 'application/json' }), stripeWebhookHandler);
 // global middlewares
-app.use(
-  cors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-      'http://localhost:3003',
-      'http://localhost:3004',
-      'http://localhost:3005',
-      'http://localhost:3006',
-      'http://localhost:3007',
-      'http://10.0.60.137:4173',
-      'http://localhost:3008',
-      'http://10.0.60.24:4173',
-      'http://localhost:4174',
-      'http://13.49.200.198',
-      'http://52.45.173.22',
-    ],
-    credentials: true,
-  }),
-);
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -54,7 +30,7 @@ if (config.node_env !== 'test') {
 
 app.use(cookieParser());
 app.use(compression(compressionOptions));
-app.use(helmetConfig);
+// app.use(helmetConfig);
 app.use('/v1/uploads', express.static(path.join('uploads')));
 app.use(applyRateLimit());
 

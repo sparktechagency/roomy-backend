@@ -30,6 +30,17 @@ const getAllBlogsByRole = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSpecificBlogDetails = handleAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await blogServices.retrieveSpecificBlogDetails(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    status: 'success',
+    message: 'Blog data has been retrieved succesfully',
+    data: result,
+  });
+});
+
 const recentsBlog = handleAsync(async (req: Request, res: Response) => {
   const result = await blogServices.retrieveRecentBlogs(3);
   sendResponse(res, {
@@ -84,7 +95,6 @@ const editBlog = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const deleteBlog = handleAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await blogServices.deleteBlog(id);
@@ -101,6 +111,7 @@ export default {
   recentsBlog,
   getAllBlogs,
   getAllBlogsByRole,
+  getSpecificBlogDetails,
   editBlog,
   deleteBlog,
 };

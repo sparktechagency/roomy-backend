@@ -24,7 +24,7 @@ const authentication = (...requiredRoles: string[]) => {
     try {
       const authHeader = req.headers['authorization'];
       const token = authHeader && authHeader.split(' ')[1];
-
+      console.log(token)
       if (!token) throw new CustomError.UnAuthorizedError('Unauthorized access!');
       const payload = jwtHelpers.verifyToken(token, config.jwt_access_token_secret as string) as JwtPayload;
       if (!payload) throw new CustomError.UnAuthorizedError('Invalid token!');
