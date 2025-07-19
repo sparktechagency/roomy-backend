@@ -1,7 +1,8 @@
+import User from '../user/user.model';
 import { IVerification } from './verification.interface';
 import verification from './verification.model';
 
-export const saveVerificationUserWithKyc = async (id: string, data: IVerification, files: any): Promise<IVerification> => {
+export const saveVerificationUserWithKyc = async (id: string, data: IVerification, files: any, user:any): Promise<IVerification> => {
   console.log(data);
   const frontPartUrl = files.front_part?.[0];
   console.log(frontPartUrl);
@@ -10,9 +11,8 @@ export const saveVerificationUserWithKyc = async (id: string, data: IVerificatio
   if (existing) {
     throw new Error('Verification already exists for this user.');
   }
-
   // Save to DB
- const result =  await verification.create({
+  const result = await verification.create({
     user: id,
     country: data.country,
     verificationType: data.verificationType,
@@ -22,7 +22,8 @@ export const saveVerificationUserWithKyc = async (id: string, data: IVerificatio
     },
     isFaceVerified: data.isFaceVerified,
   });
-
+  user.isVerifiedId = true;
+  await user.save();
   return result;
 };
 

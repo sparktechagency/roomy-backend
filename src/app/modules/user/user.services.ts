@@ -78,7 +78,7 @@ export const createUserIntoDb = async (data: IUser & IBaseProfile, role: string)
     const fullName = `${data.firstName} ${data.lastName}`;
     const mailOptions = {
       from: config.gmail_app_user,
-      to: newUser.email,
+      to: newUser?.email,
       subject: 'Email Verification',
       html: registrationEmailTemplate(fullName, verificationCode, expiredTime, 'Roomy'),
     };

@@ -53,7 +53,10 @@ export const userSchema = new mongoose.Schema<IUser>(
       type: Boolean,
       default: false,
     },
-
+    isVerifiedId: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: {
@@ -97,7 +100,6 @@ userSchema.pre('save', function (next) {
   if (this.isModified('verification.code') && this.verification?.code) {
     this.verification.code = bcrypt.hashSync(this.verification.code, saltRounds);
   }
-
   next();
 });
 

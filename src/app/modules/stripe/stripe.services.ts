@@ -3,6 +3,7 @@ import config from '../../../config';
 const stripe = new Stripe(config.stripe_secret_key as string);
 
 const openOnboardingLink = async (host: any) => {
+    
   if (host.stripeAccountId) {
     const onboardingLink = await stripe.accountLinks.create({
       account: host.stripeAccountId,
@@ -29,6 +30,7 @@ const openOnboardingLink = async (host: any) => {
       },
     },
   });
+
   host.stripeAccountId = account.id;
   await host.save();
 

@@ -26,9 +26,6 @@ const userLogin = handleAsync(async (req: Request, res: Response) => {
   if (user.status === 'blocked') {
     throw new CustomError.ForbiddenError('This user is blocked');
   }
-  if (!user.isEmailVerified) {
-    throw new CustomError.ForbiddenError('You are not verified user .Please verify your email');
-  }
 
   // check the password is correct
   const isPasswordMatch = user.comparePassword(password);
@@ -39,6 +36,8 @@ const userLogin = handleAsync(async (req: Request, res: Response) => {
     id: user._id,
     email: user.email,
     role: user.profile.role,
+    isEmailVerified: user.isEmailVerified,
+    isVerifiedId: user.isVerifiedId
   };
 
   const accessToken = jwtHelpers.createToken(
@@ -61,6 +60,7 @@ const userLogin = handleAsync(async (req: Request, res: Response) => {
     accessToken,
     refreshToken,
     isEmailVerified: user.isEmailVerified,
+    isVerifiedId: user.isVerifiedId
   };
 
   sendResponse(res, {
@@ -176,6 +176,7 @@ const userEmailVerify = handleAsync(async (req: Request, res: Response) => {
   }
 
   const isVerificationCodeMatch = user.compareVerificationCode(code);
+  console.log(isVerificationCodeMatch);
   if (!isVerificationCodeMatch) {
     throw new CustomError.BadRequestError('Invalid code!');
   }

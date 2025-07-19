@@ -16,7 +16,7 @@ const verificationUserWithKyc = handleAsync(async (req: Request, res: Response) 
     throw new CustomError.BadRequestError('user not found');
   }
 
-  const result = await verificationServices.saveVerificationUserWithKyc(id, data, files);
+  const result = await verificationServices.saveVerificationUserWithKyc(id, data, files, user);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     status: 'success',
