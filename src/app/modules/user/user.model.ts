@@ -23,9 +23,9 @@ export const userSchema = new mongoose.Schema<IUser>(
       required: true,
       validate: {
         validator: function (v) {
-          return /^\+61[ ]?4\d{2}[ ]?\d{3}[ ]?\d{3}$/.test(v) || /^\+614\d{8}$/.test(v);
+          return /^\d{10}$/.test(v);
         },
-        message: (props) => `${props.value} is not a valid Australian mobile phone number!`,
+        message: (props) => `${props.value} is not a valid 10-digit phone number!`,
       },
     },
 

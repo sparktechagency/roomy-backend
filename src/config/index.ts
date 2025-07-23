@@ -29,6 +29,7 @@ const envVars = envSchema.parse(process.env);
 
 export default {
   node_env: envVars.NODE_ENV,
+  port:envVars.PORT,
   server_port: envVars.PORT,
   server_name: envVars.SERVER_NAME,
   mongodb_url: envVars.MONGODB_URL,

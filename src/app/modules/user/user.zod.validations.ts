@@ -29,8 +29,8 @@ const registerUserValidationSchema = z.object({
       .string({
         required_error: 'Phone is required',
       })
-      .regex(/^\+614\d{8}$/, {
-        message: 'Phone number must be a valid Australian number (e.g., +61412345678)',
+      .regex(/^\d{10}$/, {
+        message: 'Phone number must be a valid 10 digit',
       }),
 
     password: z

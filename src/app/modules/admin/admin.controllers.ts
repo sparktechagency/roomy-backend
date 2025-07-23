@@ -10,6 +10,8 @@ import adminServices from './admin.services';
 const createAdmin = handleAsync(async (req: Request, res: Response) => {
   const adminData = req.body;
 
+  console.log('ahsan-========================');
+
   const isAdminExist = await Admin.findOne({ email: adminData.email });
   if (isAdminExist) {
     throw new CustomError.BadRequestError('This admin already exist');
